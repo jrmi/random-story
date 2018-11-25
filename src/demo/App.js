@@ -1,10 +1,10 @@
 import "./css/App.css";
-import TextGenerator from "./../lib";
+import RandomStory from "./../lib";
 
 class App {
   constructor() {
-    let tg = new TextGenerator();
-    console.log("Demo loaded!", tg);
+    let rs = new RandomStory();
+    console.log("Demo loaded!", rs);
   }
 }
 

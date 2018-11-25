@@ -1,5 +1,5 @@
 {
-  "name": "text-generator",
+  "name": "random-story",
   "version": "1.0.4",
   "main": "build/index.js",
   "scripts": {

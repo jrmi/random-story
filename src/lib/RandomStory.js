@@ -1,4 +1,4 @@
-class TextGenerator {
+class RandomStory {
   constructor() {
     this.domains = {};
   }
@@ -117,4 +117,4 @@ class TextGenerator {
   }
 }
 
-export default TextGenerator;
+export default RandomStory;
