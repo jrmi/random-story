@@ -1,6 +1,6 @@
 {
   "name": "random-story",
-  "version": "1.0.4",
+  "version": "0.1.0",
   "main": "build/index.js",
   "scripts": {
     "start": "node scripts/start.js",
@@ -12,10 +12,10 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/jrmi/random-story"
   },
-  "author": "Jeremie Pardou <???>",
-  "homepage": "",
+  "author": "Jeremie Pardou <571533+jrmi@users.noreply.github.com>",
+  "homepage": "https://github.com/jrmi/random-story",
   "keywords": [
     "library"
   ],
