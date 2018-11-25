@@ -1,2 +1,2 @@
-import App from './App';
-export default App;
+import TextGenerator from "./TextGenerator";
+export default TextGenerator;

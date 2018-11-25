@@ -1,5 +1,5 @@
 {
-  "name": "@hodgef/js-library-boilerplate",
+  "name": "text-generator",
   "version": "1.0.4",
   "main": "build/index.js",
   "scripts": {
@@ -12,13 +12,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hodgef/js-library-boilerplate"
+    "url": ""
   },
-  "author": "Francisco Hodge <hello@franciscohodge.com> (https://github.com/hodgef)",
-  "bugs": {
-    "url": "https://github.com/hodgef/js-library-boilerplate/issues"
-  },
-  "homepage": "https://github.com/hodgef/js-library-boilerplate",
+  "author": "Jeremie Pardou <???>",
+  "homepage": "",
   "keywords": [
     "library"
   ],

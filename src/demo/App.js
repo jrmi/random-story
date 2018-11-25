@@ -1,10 +1,10 @@
-import './css/App.css';
-import Lib from './../lib';
+import "./css/App.css";
+import TextGenerator from "./../lib";
 
 class App {
-  constructor(){
-    let libInstance = new Lib();
-    console.log("Demo loaded!", libInstance);
+  constructor() {
+    let tg = new TextGenerator();
+    console.log("Demo loaded!", tg);
   }
 }
 
