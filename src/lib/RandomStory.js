@@ -3,15 +3,71 @@ class RandomStory {
     this.domains = {};
   }
 
+  deepcopy(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
   rand(min, max) {
     return Math.random() * (max - min) + min;
   }
 
-  add(domain, label, weight, conditions, contextAddition, vars) {
-    weight = weight || 1;
-    conditions = conditions || [];
-    contextAddition = contextAddition || [];
-    vars = vars || {};
+  addOld(domain, label, weight, conditions, contextAddition) {
+    this.add({
+      domain,
+      label,
+      weight,
+      condition: conditions,
+      effect: contextAddition
+    });
+  }
+
+  add({
+    domain,
+    label,
+    weight = 1,
+    condition = () => true,
+    effect = () => {}
+  }) {
+    if (typeof label !== 'function') {
+      // Replace fixed label by function
+      const prev_label = label;
+      label = context => prev_label;
+    }
+
+    if (typeof weight !== 'function') {
+      // Replace fixed weight by function
+      const prev_weight = weight;
+      weight = context => prev_weight;
+    }
+
+    if (Array.isArray(condition)) {
+      // Replace condition array by function
+      const array_condition = condition;
+
+      condition = context => {
+        const { tags = [] } = context;
+        for (let cond of array_condition) {
+          if (cond[0] === '!') {
+            if (tags.includes(cond.slice(1))) {
+              return false;
+            }
+          } else {
+            if (!tags.includes(cond)) {
+              return false;
+            }
+          }
+        }
+        return true;
+      };
+    }
+
+    if (Array.isArray(effect)) {
+      const array_effect = effect;
+      // Replace array effect by function
+      effect = context => {
+        context.tags = context.tags.concat(array_effect);
+      };
+    }
 
     if (!this.domains[domain]) {
       this.domains[domain] = [];
@@ -20,48 +76,31 @@ class RandomStory {
     this.domains[domain].push({
       label,
       weight,
-      conditions,
-      additions: contextAddition,
-      vars
+      condition,
+      effect
     });
   }
 
-  valid_in_context(conditions, context) {
-    for (let cond of conditions) {
-      if (cond[0] === "!") {
-        if (context.includes(cond.slice(1))) {
-          return false;
-        }
-      } else {
-        if (!context.includes(cond)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  total_weight(domain, context) {
-    return domain.reduce((prev, cur, i, arr) => {
-      if (this.valid_in_context(cur.conditions, context)) {
-        return prev + cur.weight;
+  totalWeight(domain, context) {
+    // Compute total weight for that domain for current context
+    return domain.reduce((prev, cur) => {
+      if (cur.condition(context)) {
+        return prev + cur.weight(context);
       } else {
         return prev;
       }
     }, 0);
   }
 
-  weighted_pick(domain, context) {
-    context = context || [];
+  weightedPick(domain, context = { tags: [] }) {
+    // Pick an element from domain
 
-    // Pick an element from
-    const random_num = this.rand(0, this.total_weight(domain, context));
+    const random_num = this.rand(0, this.totalWeight(domain, context));
     let weight_sum = 0;
 
     for (let elt of domain) {
-      if (this.valid_in_context(elt.conditions, context)) {
-        weight_sum += elt.weight;
-
+      if (elt.condition(context)) {
+        weight_sum += elt.weight(context);
         if (random_num <= weight_sum) {
           return elt;
         }
@@ -69,47 +108,34 @@ class RandomStory {
     }
   }
 
-  resolve(sentence, context, vars, level) {
-    // Resolve sentence by replacing each part by random one
-    sentence = sentence || "<start>";
-    context = context || [];
-    vars = vars || {};
-    level = level || 0;
+  resolve(sentence = '<start>', context = { tags: [] }, level = 0) {
+    // Resolve sentence by replacing each part by randomly selected one
 
-    let result = sentence.replace(/\<([^\}]*)\>/g, (match, name) => {
+    let result = sentence.replace(/<([^}]*)>/g, (match, name) => {
       if (this.domains[name]) {
-        const part = this.weighted_pick(this.domains[name], context);
+        const part = this.weightedPick(this.domains[name], context);
 
         if (part) {
-          let label;
-          if (typeof part.label === "function") {
-            label = part.label(context);
-          } else {
-            ({ label } = part);
-          }
-          Object.assign(vars, part.vars);
+          const label = part.label(context);
 
-          return this.resolve(
-            label,
-            context.concat(part.additions),
-            vars,
-            level + 1
-          );
+          // Deep copy context to avoid side effects
+          const newContext = this.deepcopy(context);
+          part.effect(newContext);
+
+          return this.resolve(label, newContext, level + 1);
         } else {
-          return "---";
+          return '---';
         }
       } else {
-        return "...";
+        return '...';
       }
     });
 
     if (level === 0) {
-      result = result.replace(/\$\(([^ \)]*)\)/g, function(match, name) {
-        if (vars[name] != null) {
-          return vars[name];
-        } else {
-          return "...";
-        }
+      // resolve variables
+      const { vars = {} } = context;
+      result = result.replace(/\$\(([^ )]*)\)/g, (match, name) => {
+        return vars[name] || '...';
       });
     }
 
