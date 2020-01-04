@@ -1,6 +1,6 @@
 {
   "name": "random-story",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "main": "build/index.js",
   "scripts": {
     "start": "node scripts/start.js",
@@ -20,6 +20,9 @@
     "library"
   ],
   "license": "MIT",
+  "dependencies": {
+    "eslint-plugin-react": "^7.17.0"
+  },
   "devDependencies": {
     "@babel/core": "7.1.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
