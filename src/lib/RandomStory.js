@@ -111,7 +111,7 @@ class RandomStory {
   resolve(sentence = '<start>', context = { tags: [] }, level = 0) {
     // Resolve sentence by replacing each part by randomly selected one
 
-    let result = sentence.replace(/<([^}]*)>/g, (match, name) => {
+    let result = sentence.replace(/<([^>]*)>/g, (match, name) => {
       if (this.domains[name]) {
         const part = this.weightedPick(this.domains[name], context);
 

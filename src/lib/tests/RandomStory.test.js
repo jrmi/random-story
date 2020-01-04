@@ -89,6 +89,20 @@ it('is weightedPick working ?', () => {
   ).toBe('42');
 });
 
+it('It generate something very simple', () => {
+  const rs = new RandomStory();
+  rs.add({ domain: 'newDom', label: 'test' });
+  expect(rs.resolve('<newDom>')).toBe('test');
+});
+
+it('It generate something very simple', () => {
+  const rs = new RandomStory();
+  rs.add({ domain: 'newDom', label: '<test1><test2>' });
+  rs.add({ domain: 'test1', label: 'test1' });
+  rs.add({ domain: 'test2', label: 'test2' });
+  expect(rs.resolve('<newDom>')).toBe('test1test2');
+});
+
 it('It generate something simple', () => {
   const rs = new RandomStory();
   rs.add({ domain: 'start', label: 'test' });
@@ -144,4 +158,26 @@ it('And use vars', () => {
   expect(
     rs.resolve('<start>', { tags: ['cond1'], vars: { titi: 'hihi' } })
   ).toBe('pithihipouet');
+});
+
+it('It generate something with complexe conditions', () => {
+  const rs = new RandomStory();
+  rs.add({
+    domain: 'newDom',
+    label: 'medium',
+    condition: ({ value }) => value <= 10 && value >= 5
+  });
+  rs.add({
+    domain: 'newDom',
+    label: 'low',
+    condition: ({ value }) => value < 5
+  });
+  rs.add({
+    domain: 'newDom',
+    label: 'high',
+    condition: ({ value }) => value > 10
+  });
+  expect(rs.resolve('<newDom>', { value: 2 })).toBe('low');
+  expect(rs.resolve('<newDom>', { value: 6 })).toBe('medium');
+  expect(rs.resolve('<newDom>', { value: 15 })).toBe('high');
 });
